@@ -41,14 +41,17 @@ def handle_new_pet_form():
 
     form = AddPetForm()
 
-    if form.validate_on_submit:
-        name = form.name.data
-        species = form.species.data
-        photo_url = form.photo_url.data
-        age = form.age.data
-        notes = form.notes.data
+    if form.validate_on_submit():
+        new_pet = Pet(name=form.name.data,
+                      species=form.species.data,
+                      photo_url=form.photo_url.data,
+                      age=form.age.data,
+                      notes=form.notes.data)
 
-        flash(f"Added new pet: {name}, a {species}")
+        db.session.add(new_pet)
+        db.session.commit()
+
+        flash(f"Added new pet: {new_pet.name}, a {new_pet.species}")
         return redirect("/")
 
     else:

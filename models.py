@@ -26,7 +26,7 @@ class Pet(db.Model):
     photo_url = db.Column(db.Text, default="", nullable=False)
     age = db.Column(
         db.Text,
-        db.CheckConstraint('age in ["baby", "young", "adult", "senior"]'),
+        # db.CheckConstraint('age in ["baby", "young", "adult", "senior"]'),
         nullable=False,
     )
     notes = db.Column(db.Text)
