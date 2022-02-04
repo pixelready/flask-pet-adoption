@@ -1,19 +1,19 @@
 """Flask app for adopt app."""
 
-from flask import Flask, render_template
-
+from flask import Flask, render_template, flash, redirect
 from flask_debugtoolbar import DebugToolbarExtension
+from flask_wtf import FlaskForm
 
 from models import db, connect_db, Pet
+from forms import AddPetForm
 
-from flask_wtf import FlaskForm
 
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = "secret"
+app.config["SECRET_KEY"] = "secret"
 
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///adopt"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///adopt"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 connect_db(app)
 db.create_all()
@@ -25,6 +25,7 @@ db.create_all()
 
 toolbar = DebugToolbarExtension(app)
 
+
 @app.route("/", methods=["GET"])
 def list_pets():
     """Homepage, lists all the pets"""
@@ -32,3 +33,23 @@ def list_pets():
     pets = Pet.query.all()
 
     return render_template("pet_list.html", pets=pets)
+
+
+@app.route("/add", methods=["GET", "POST"])
+def handle_new_pet_form():
+    """Display new pet form, or handle submitted new pet data"""
+
+    form = AddPetForm()
+
+    if form.validate_on_submit:
+        name = form.name.data
+        species = form.species.data
+        photo_url = form.photo_url.data
+        age = form.age.data
+        notes = form.notes.data
+
+        flash(f"Added new pet: {name}, a {species}")
+        return redirect("/")
+
+    else:
+        return render_template("new_pet_form.html", form=form)

@@ -3,17 +3,16 @@
 {% block content %}
 
   {% for pet in pets %}
-   <div>
-     <img src="{{ pet.photo_url }}">
-     <h2>
-       {{ pet.name }}
-     </h2>
-      {% if pet.available %} 
+    <div>
+      <img src="{{ pet.photo_url }}">
+      <h2>
+        {{ pet.name }}
+      </h2>
+      {% if pet.available %}
         <span class="pet_adoption_status">Available</span>
       {% endif %}
-   </div>
+    </div>
 
   {% endfor %}
-
 
 {% endblock %}
