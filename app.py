@@ -42,17 +42,32 @@ def handle_new_pet_form():
     form = AddPetForm()
 
     if form.validate_on_submit():
-        new_pet = Pet(name=form.name.data,
-                      species=form.species.data,
-                      photo_url=form.photo_url.data,
-                      age=form.age.data,
-                      notes=form.notes.data)
+        name = form.name.data
+        species = form.species.data
+        photo_url = form.photo_url.data
+        age = form.age.data
+        notes = form.notes.data
+
+        new_pet = Pet(
+            name=name, species=species, photo_url=photo_url, age=age, notes=notes
+        )
 
         db.session.add(new_pet)
         db.session.commit()
 
-        flash(f"Added new pet: {new_pet.name}, a {new_pet.species}")
+        flash(f"Added new pet: {name}, a {species}")
         return redirect("/")
 
     else:
         return render_template("new_pet_form.html", form=form)
+
+
+@app.route("/<int:id>", methods=["GET"])
+def show_pet_details(id):
+    """Show the pet details"""
+
+    pet = Pet.query.get_or_404(id)
+
+    # TODO: add wtforms for edit form display
+
+    return render_template("pet_details.html", pet=pet)
