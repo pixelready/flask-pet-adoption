@@ -2,7 +2,6 @@
 
 from flask import Flask, render_template, flash, redirect
 from flask_debugtoolbar import DebugToolbarExtension
-from flask_wtf import FlaskForm
 
 from models import db, connect_db, Pet
 from forms import AddPetForm, EditPet
@@ -63,14 +62,12 @@ def handle_new_pet_form():
 
 
 @app.route("/<int:id>", methods=["GET", "POST"])
-def show_pet_details(id):
-    """Show the pet details"""
+def show_and_edit_pet_details(id):
+    """Show the pet details and edit form, handle updates to pet"""
 
     pet = Pet.query.get_or_404(id)
 
-    # TODO: add wtforms for edit form display
-
-    form = EditPet()
+    form = EditPet(obj=pet)
 
     if form.validate_on_submit():
 

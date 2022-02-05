@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+<!-- TODO: add 'add' button and link pet names -->
 {% block content %}
 
   <div class="pet-details">
@@ -11,7 +11,7 @@
       {{pet.species}}</span>
   </div>
   <div class="edit">
-    <form action="/{{pet.id}}/" method='POST' id="pet-edit-form">
+    <form action="/{{pet.id}}" method='POST' id="pet-edit-form">
       {{ form.hidden_tag() }}
       {% for field in form if field.widget.input_type != 'hidden' %}
         <p>
