@@ -1,4 +1,7 @@
 """Flask app for adopt app."""
+import os
+
+import requests
 
 from flask import Flask, render_template, flash, redirect
 from flask_debugtoolbar import DebugToolbarExtension
@@ -6,13 +9,17 @@ from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, Pet
 from forms import AddPetForm, EditPet
 
-
 app = Flask(__name__)
 
 app.config["SECRET_KEY"] = "secret"
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql:///adopt"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+PETFINDER_API_KEY = os.environ['PETFINDER_API_KEY']
+PETFINDER_SECRET_KEY = os.environ['PETFINDER_SECRET_KEY']
+
+auth_token = None
 
 connect_db(app)
 db.create_all()
@@ -23,6 +30,21 @@ db.create_all()
 # app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 toolbar = DebugToolbarExtension(app)
+
+
+def update_auth_token_string():
+    response = requests.get("https://api.petfinder.com/v2/oauth2/token",
+                           params={
+                               "client_id": PETFINDER_API_KEY,
+                               "client_secret": PETFINDER_SECRET_KEY})
+    print(response.json())
+    # return 
+
+
+@app.before_first_request
+def refresh_credentials():
+    global auth_token
+    auth_token = update_auth_token_string()
 
 
 @app.route("/", methods=["GET"])
@@ -48,8 +70,11 @@ def handle_new_pet_form():
         notes = form.notes.data
 
         new_pet = Pet(
-            name=name, species=species, photo_url=photo_url, age=age, notes=notes
-        )
+            name=name,
+            species=species,
+            photo_url=photo_url,
+            age=age,
+            notes=notes)
 
         db.session.add(new_pet)
         db.session.commit()
